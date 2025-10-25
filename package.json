@@ -1,0 +1,41 @@
+{
+  "name": "ai-chatbot-frontend",
+  "version": "1.0.0",
+  "description": "AI Chatbot Frontend - Next.js Application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" next dev",
+    "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next export",
+    "analyze": "cross-env ANALYZE=true npm run build"
+  },
+  "keywords": ["ai", "chatbot", "nextjs", "vercel", "huggingface"],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "@splinetool/react-spline": "^4.1.0",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/supabase-js": "^2.57.0",
+    "@tabler/icons-react": "^3.34.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.542.0",
+    "motion": "^12.23.12",
+    "next": "^15.5.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "spline": "^0.0.0",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
+    "autoprefixer": "^10.4.21",
+    "cross-env": "^7.0.3",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13"
+  }
+}

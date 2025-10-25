@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Next.js
+/.next/
+/out/
+
+# Environment variables
+.env*.local
+
+# Python
+.venv/
+__pycache__/
+
+# Vercel
+.vercel
+
+# OS
+.DS_Store
