@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
 import { ChatHistoryDB } from '../lib/chatHistoryDB';
+import { API_BASE_URL } from '../lib/api';
 
 export default function BotConfig() {
   const router = useRouter();
@@ -122,7 +123,7 @@ export default function BotConfig() {
   useEffect(() => {
     const checkSttStatus = async () => {
       try {
-        const response = await fetch('https://sean22123-backend.hf.space/stt/health');
+        const response = await fetch(`${API_BASE_URL}/stt/health`);
         if (response.ok) {
           const data = await response.json();
           setSttStatus({
@@ -158,7 +159,7 @@ export default function BotConfig() {
   useEffect(() => {
     const checkTtsStatus = async () => {
       try {
-        const response = await fetch('https://sean22123-backend.hf.space/tts/health');
+        const response = await fetch(`${API_BASE_URL}/tts/health`);
         if (response.ok) {
           const data = await response.json();
           setTtsStatus({

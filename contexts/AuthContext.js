@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, SUPABASE_CONFIGURED } from '../lib/supabase';
 import { ChatHistoryManager } from '../lib/chatHistory';
 
 const AuthContext = createContext({});
@@ -14,16 +14,40 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session and profile
-    const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        await getProfile(session.user.id);
-      }
-      
+    let mounted = true;
+
+    // If Supabase is not configured, avoid waiting and clear loading immediately
+    if (!SUPABASE_CONFIGURED) {
+      setUser(null);
+      setProfile(null);
       setLoading(false);
+      return () => { mounted = false; };
+    }
+
+    // Safety timeout so UI never gets stuck in loading
+    const safetyTimeout = setTimeout(() => {
+      if (mounted) setLoading(false);
+    }, 4000);
+
+    // Get initial session and profile with robust error handling
+    const getInitialSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!mounted) return;
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          await getProfile(session.user.id);
+        }
+      } catch (err) {
+        console.log('Auth getSession error:', err);
+        if (mounted) {
+          setUser(null);
+          setProfile(null);
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
     };
 
     getInitialSession();
@@ -31,19 +55,24 @@ export const AuthProvider = ({ children }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
         setUser(session?.user ?? null);
-        
+
         if (session?.user) {
           await getProfile(session.user.id);
         } else {
           setProfile(null);
         }
-        
+
         setLoading(false);
       }
     );
 
-    return () => subscription?.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(safetyTimeout);
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const getProfile = async (userId) => {
