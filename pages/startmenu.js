@@ -442,7 +442,7 @@ export default function StartMenu() {
 
   const transcribeAudio = async (audioBlob) => {
     try {
-      const response = await fetch('https://sean22123-backend.hf.space/stt/transcribe-blob', {
+      const response = await fetch('https://sean22123-backend.hf.space/stt/transcribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'audio/webm'

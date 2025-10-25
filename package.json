@@ -11,12 +11,20 @@
     "export": "next export",
     "analyze": "cross-env ANALYZE=true npm run build"
   },
-  "keywords": ["ai", "chatbot", "nextjs", "vercel", "huggingface"],
+  "keywords": [
+    "ai",
+    "chatbot",
+    "nextjs",
+    "vercel",
+    "huggingface"
+  ],
   "author": "Your Name",
   "license": "ISC",
   "dependencies": {
     "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.10.86",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.57.0",
     "@tabler/icons-react": "^3.34.1",
     "class-variance-authority": "^0.7.1",
