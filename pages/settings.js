@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
-import { API_BASE_URL } from '../lib/api';
 
 export default function Settings() {
   const router = useRouter();
@@ -67,7 +66,7 @@ export default function Settings() {
 
   const loadVoices = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tts/voices`);
+      const response = await fetch('https://sean22123-backend.hf.space/tts/voices');
       if (response.ok) {
         const voiceData = await response.json();
         setVoices(voiceData);
@@ -138,7 +137,7 @@ export default function Settings() {
         playingAudio.currentTime = 0;
       }
 
-      const response = await fetch(`${API_BASE_URL}/tts/speak`, {
+      const response = await fetch('https://sean22123-backend.hf.space/tts/speak', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

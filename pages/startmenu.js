@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
 import { ChatHistoryDB } from '../lib/chatHistoryDB';
 import { supabase } from '../lib/supabase';
-import { API_BASE_URL } from '../lib/api';
 
 export default function StartMenu() {
   const router = useRouter();
@@ -150,7 +149,7 @@ export default function StartMenu() {
       }
 
       // Call TTS API
-      const response = await fetch(`${API_BASE_URL}/tts/speak`, {
+      const response = await fetch('https://sean22123-backend.hf.space/tts/speak', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -247,7 +246,7 @@ export default function StartMenu() {
             });
             
             // Classify image
-            const classifyResponse = await fetch(`${API_BASE_URL}/classify-image`, {
+            const classifyResponse = await fetch('https://sean22123-backend.hf.space/classify-image', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -293,7 +292,7 @@ export default function StartMenu() {
       }));
       
       // Call Python API with potentially enhanced message
-      const response = await fetch(`${API_BASE_URL}/chat`, {
+      const response = await fetch('https://sean22123-backend.hf.space/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -443,7 +442,7 @@ export default function StartMenu() {
 
   const transcribeAudio = async (audioBlob) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/stt/transcribe`, {
+      const response = await fetch('https://sean22123-backend.hf.space/stt/transcribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'audio/webm'
