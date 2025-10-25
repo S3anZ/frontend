@@ -16,7 +16,18 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Get initial session and profile
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      let { data: { session } } = await supabase.auth.getSession();
+    
+      // If no session but token exists in storage, try to refresh
+      if (!session) {
+        const { data: refreshedSession, error } = await supabase.auth.refreshSession();
+        if (error) {
+          console.error('Session refresh error:', error);
+        } else {
+          session = refreshedSession;
+        }
+      }
+    
       setUser(session?.user ?? null);
       
       if (session?.user) {

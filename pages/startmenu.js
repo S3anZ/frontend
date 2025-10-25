@@ -52,68 +52,61 @@ export default function StartMenu() {
     }
   }, [user, loading, router]);
 
-  // Load user settings
-  useEffect(() => {
-    if (user) {
-      const savedModel = localStorage.getItem(`defaultModel_${user.id}`);
-      const savedVoice = localStorage.getItem(`defaultVoice_${user.id}`);
-      
-      if (savedModel) setSelectedModel(savedModel);
-      if (savedVoice) setDefaultVoice(savedVoice);
-    }
-  }, [user]);
-
-  // Load or create chat session
-  useEffect(() => {
-    const loadChatSession = async () => {
-      if (user && !loading) {
-        const existingChatId = ChatHistoryDB.getCurrentChatId(user.id);
-        
-        if (existingChatId) {
-          const existingChat = await ChatHistoryDB.getChat(user.id, existingChatId);
-          if (existingChat && !existingChat.isClosed) {
-            setCurrentChatId(existingChatId);
-            setCurrentChat(existingChat);
-            setMessages(existingChat.messages);
-            if (existingChat.messages.length > 0) {
-              setTitleVisible(false);
-            }
-            // Set uploaded image state if chat has image
-            if (existingChat.hasImage) {
-              // Set multiple images if available
-              if (existingChat.images && existingChat.images.length > 0) {
-                setUploadedImages(existingChat.images);
-              } else {
-                // Fallback to single image for backward compatibility
-                setUploadedImages([{
-                  url: existingChat.imageUrl,
-                  name: existingChat.imageName
-                }]);
-              }
-            } else {
-              setUploadedImages([]);
-            }
-          } else {
-            // Create new chat if existing one is closed or doesn't exist
-            const newChat = await ChatHistoryDB.createNewChat(user.id);
-            setCurrentChatId(newChat.id);
-            setCurrentChat(newChat);
-            setMessages([]);
-            setUploadedImages([]);
-          }
-        } else {
-          // Create new chat
-          const newChat = await ChatHistoryDB.createNewChat(user.id);
-          setCurrentChatId(newChat.id);
-          setCurrentChat(newChat);
-          setMessages([]);
-          setUploadedImages([]);
+  // Load user settings and chat session
+useEffect(() => {
+  if (!loading && user) {
+    const loadUserSettings = async () => {
+      try {
+        const { data: settings } = await supabase
+          .from('user_settings')
+          .select('default_model, default_voice')
+          .eq('user_id', user.id)
+          .single();
+        if (settings) {
+          setSelectedModel(settings.default_model || 'gemini');
+          setDefaultVoice(settings.default_voice || 'af_heart');
         }
+      } catch (error) {
+        console.error('Error loading user settings:', error);
       }
     };
-
-    loadChatSession();
-  }, [user, loading]);
+    loadUserSettings();
+    const loadOrCreateChat = async () => {
+      try {
+        const storedChatId = localStorage.getItem(`current_chat_${user.id}`);
+        let chat;
+        if (storedChatId) {
+          chat = await ChatHistoryDB.getChat(user.id, storedChatId);
+          if (chat) {
+            console.log('Loaded existing chat:', storedChatId);
+          } else {
+            console.log('No chat found with ID:', storedChatId);
+            localStorage.removeItem(`current_chat_${user.id}`);
+          }
+        }
+        if (!chat) {
+          chat = await ChatHistoryDB.createNewChat(user.id);
+          if (chat) {
+            localStorage.setItem(`current_chat_${user.id}`, chat.id);
+            console.log('New chat created:', chat.id);
+          }
+        }
+        if (chat) {
+          setCurrentChatId(chat.id);
+          setCurrentChat(chat);
+          setMessages(chat.messages || []);
+          setUploadedImages(chat.images || []);
+          if (chat.messages?.length > 0) {
+            setTitleVisible(false);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading or creating chat:', error);
+      }
+    };
+    loadOrCreateChat();
+  }
+}, [user, loading]);
 
   // Reset model selector when dropdown closes
   useEffect(() => {
